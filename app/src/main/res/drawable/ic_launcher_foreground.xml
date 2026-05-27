@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Spade symbol -->
+    <path
+        android:fillColor="#2ECC71"
+        android:pathData="M54,28 C54,28 38,44 38,56 C38,63 43,68 50,68 C50,68 47,74 44,78 L64,78 C61,74 58,68 58,68 C65,68 70,63 70,56 C70,44 54,28 54,28 Z"/>
+</vector>
