@@ -50,67 +50,67 @@ object PreflopStrategy {
     }
 
     private fun getRFIDecision(tier: Int, posCat: PositionCategory, hand: String, tableSize: TableSize): PreflopDecision {
-        val playersDesc = "${tableSize.players}-player table"
+        val playersDesc = "${tableSize.players}人桌"
         return when {
             tier == 1 -> PreflopDecision(
                 action = ActionType.RAISE,
                 raiseSize = RaiseSize.TWO_FIVE_X,
-                explanation = "$hand is a premium hand. Always raise for value at any table size ($playersDesc).",
-                rule = "Premium hands = always raise, any position, any table size"
+                explanation = "$hand 是顶级强牌。在${playersDesc}的任何位置都应该加注，榨取价值。",
+                rule = "顶级强牌 = 任何位置、任何桌型都加注"
             )
             tier == 2 -> PreflopDecision(
                 action = ActionType.RAISE,
                 raiseSize = RaiseSize.TWO_FIVE_X,
-                explanation = "$hand is a strong hand. Raise from any position at a $playersDesc.",
-                rule = "Strong hands = raise from any position"
+                explanation = "$hand 是强牌。在${playersDesc}的任何位置都可以开池加注。",
+                rule = "强牌 = 任何位置都加注"
             )
             tier == 3 && posCat == PositionCategory.LATE -> PreflopDecision(
                 action = ActionType.RAISE,
                 raiseSize = RaiseSize.TWO_FIVE_X,
-                explanation = "$hand is playable from late position at a $playersDesc. Fewer players to act behind you.",
-                rule = "Playable hands + late position = raise"
+                explanation = "$hand 从晚位（CO/BTN）在${playersDesc}可以加注。后面待行动的人少，被压制风险低。",
+                rule = "可打牌 + 晚位 = 加注"
             )
             tier == 3 && posCat == PositionCategory.MIDDLE && tableSize.players <= 6 -> PreflopDecision(
                 action = ActionType.RAISE,
                 raiseSize = RaiseSize.TWO_FIVE_X,
-                explanation = "$hand is marginal from middle position, but at a $playersDesc with fewer opponents, it's profitable to open.",
-                rule = "Short-handed tables = open wider from middle positions"
+                explanation = "$hand 在中间位本来偏弱，但${playersDesc}人少对手少，从中间位开池有利可图。",
+                rule = "人少的桌 = 中间位可以打更宽"
             )
             tier == 3 && posCat == PositionCategory.MIDDLE -> PreflopDecision(
                 action = ActionType.FOLD,
                 raiseSize = null,
-                explanation = "$hand is too weak from middle position at a $playersDesc. Too many players behind who could have better.",
-                rule = "Full ring middle position = tighter than 6-max"
+                explanation = "$hand 在${playersDesc}的中间位太弱了。后面还有太多人可能拿着更好的牌。",
+                rule = "满桌中间位 = 比6人桌要紧很多"
             )
             tier == 3 && posCat == PositionCategory.EARLY -> PreflopDecision(
                 action = ActionType.FOLD,
                 raiseSize = null,
-                explanation = "$hand isn't strong enough from early position at a $playersDesc. ${tableSize.players - 1} players still to act.",
-                rule = "Early position = only premium and strong hands"
+                explanation = "$hand 从早位不够强。${playersDesc}中后面还有${tableSize.players - 1}个人待行动，被压制概率太高。",
+                rule = "早位 = 只打顶级和强牌"
             )
             tier == 3 && posCat == PositionCategory.BLIND -> PreflopDecision(
                 action = ActionType.FOLD,
                 raiseSize = null,
-                explanation = "$hand from the blinds without action is a fold — you'll be out of position postflop at a $playersDesc.",
-                rule = "Don't open raise weak hands from the blinds"
+                explanation = "$hand 从盲位主动开池是亏损的。翻牌后你在${playersDesc}会第一个行动，没有位置优势。",
+                rule = "盲位不要用弱牌主动加注开池"
             )
             tier == 4 && posCat == PositionCategory.LATE -> PreflopDecision(
                 action = ActionType.RAISE,
                 raiseSize = RaiseSize.TWO_FIVE_X,
-                explanation = "$hand is marginal but playable from late position at a $playersDesc. Position advantage compensates for weaker cards.",
-                rule = "Button/CO = widest opening range"
+                explanation = "$hand 是边缘牌，但从晚位在${playersDesc}可以打。位置优势弥补了牌力不足。",
+                rule = "BTN/CO = 最宽的开池范围"
             )
             tier == 4 && posCat == PositionCategory.MIDDLE && tableSize.players <= 4 -> PreflopDecision(
                 action = ActionType.RAISE,
                 raiseSize = RaiseSize.TWO_FIVE_X,
-                explanation = "$hand is playable at a short $playersDesc. With few opponents, marginal hands gain value.",
-                rule = "Short-handed = play more hands from all positions"
+                explanation = "$hand 在${playersDesc}这种人少的桌可以打。对手少时边缘牌也能盈利。",
+                rule = "人少的桌 = 所有位置都可以打更宽"
             )
             else -> PreflopDecision(
                 action = ActionType.FOLD,
                 raiseSize = null,
-                explanation = "$hand is too weak from this position at a $playersDesc. Wait for a better hand or better position.",
-                rule = "More players = tighter range needed"
+                explanation = "$hand 从这个位置在${playersDesc}太弱了。等更好的牌或者更好的位置再出手。",
+                rule = "对手越多 = 需要越强的牌才能开池"
             )
         }
     }
@@ -120,20 +120,20 @@ object PreflopStrategy {
             tier <= 2 -> PreflopDecision(
                 action = ActionType.RAISE,
                 raiseSize = RaiseSize.FOUR_X,
-                explanation = "$hand is strong enough to raise over limpers. Raise bigger (4x) to punish their weak range and isolate.",
-                rule = "Strong hand vs limper = raise bigger to isolate"
+                explanation = "$hand 足够强，可以加注隔离跛入者。加大到4倍大盲来惩罚他们的弱范围，争取单挑。",
+                rule = "强牌面对跛入 = 加大隔离"
             )
             tier == 3 && posCat == PositionCategory.LATE -> PreflopDecision(
                 action = ActionType.RAISE,
                 raiseSize = RaiseSize.FOUR_X,
-                explanation = "$hand with position over a limper is a good iso-raise spot. Limpers usually have weak hands.",
-                rule = "Late position vs limper = raise to isolate"
+                explanation = "$hand 有位置优势面对跛入者，是很好的隔离加注机会。跛入者通常拿着弱牌。",
+                rule = "晚位面对跛入 = 加注隔离"
             )
             else -> PreflopDecision(
                 action = ActionType.FOLD,
                 raiseSize = null,
-                explanation = "$hand isn't strong enough to raise over a limper from this position. Don't limp behind — it creates bad multiway pots.",
-                rule = "Don't limp. Raise or fold."
+                explanation = "$hand 从这个位置不够强，无法加注隔离跛入者。不要跟着跛入——那会制造糟糕的多人底池。",
+                rule = "不要跛入。要么加注，要么弃牌。"
             )
         }
     }
@@ -143,38 +143,38 @@ object PreflopStrategy {
             tier == 1 && hand in listOf("AA", "KK", "AKs") -> PreflopDecision(
                 action = ActionType.RAISE,
                 raiseSize = RaiseSize.THREE_X,
-                explanation = "$hand is strong enough to 3-bet (re-raise). You want to build the pot with your best hands and get value from worse hands that call.",
-                rule = "Premium hands = always 3-bet when facing a raise"
+                explanation = "$hand 足够强，应该3-bet（再加注）。用你最好的牌做大底池，从跟注的较差牌中榨取价值。",
+                rule = "顶级强牌面对加注 = 永远3-bet"
             )
             tier == 1 -> PreflopDecision(
                 action = ActionType.RAISE,
                 raiseSize = RaiseSize.THREE_X,
-                explanation = "$hand should 3-bet here. Even QQ is ahead of most raising ranges.",
-                rule = "Top premium = 3-bet for value"
+                explanation = "$hand 应该在这里3-bet。QQ领先于大多数加注范围。",
+                rule = "顶级牌 = 3-bet获取价值"
             )
             tier == 2 && posCat == PositionCategory.LATE -> PreflopDecision(
                 action = ActionType.CALL,
                 raiseSize = null,
-                explanation = "$hand is strong enough to call a raise in position. You'll see a flop with a good hand and positional advantage.",
-                rule = "Strong hand + position vs raiser = call (or 3-bet)"
+                explanation = "$hand 有位置时足够强可以跟注加注。你会带着好牌+位置优势看翻牌。",
+                rule = "强牌 + 有位置 面对加注 = 跟注"
             )
             tier == 2 -> PreflopDecision(
                 action = ActionType.CALL,
                 raiseSize = null,
-                explanation = "$hand can call a raise but be cautious without position. You'll need to hit the flop well.",
-                rule = "Strong hand out of position vs raiser = call, proceed carefully"
+                explanation = "$hand 可以跟注加注，但没有位置要谨慎。翻牌需要配合得好才能继续。",
+                rule = "强牌没位置面对加注 = 跟注，翻牌后谨慎"
             )
             tier == 3 && posCat == PositionCategory.LATE -> PreflopDecision(
                 action = ActionType.CALL,
                 raiseSize = null,
-                explanation = "$hand can call in position. Suited connectors and pairs have good implied odds — you can win big pots when you hit.",
-                rule = "Suited connectors/pairs + position = call for implied odds"
+                explanation = "$hand 有位置可以跟注。同花连牌和对子有很好的隐含赔率——中了能赢大底池。",
+                rule = "同花连牌/对子 + 有位置 = 跟注博隐含赔率"
             )
             else -> PreflopDecision(
                 action = ActionType.FOLD,
                 raiseSize = null,
-                explanation = "$hand is not strong enough to continue facing a raise from this position. Save your chips for better spots.",
-                rule = "Marginal hands facing a raise = fold"
+                explanation = "$hand 从这个位置面对加注不够强。省下筹码等更好的机会。",
+                rule = "边缘牌面对加注 = 弃牌"
             )
         }
     }
@@ -184,20 +184,20 @@ object PreflopStrategy {
             tier == 1 -> PreflopDecision(
                 action = ActionType.RAISE,
                 raiseSize = RaiseSize.FOUR_X,
-                explanation = "$hand is premium — raise big to thin the field. Multiway pots reduce your equity even with great hands.",
-                rule = "Premium hands in multiway = raise big to isolate"
+                explanation = "$hand 是顶级强牌——大加注清场。多人底池会大幅降低你的胜率，即使拿着好牌也需要减少对手。",
+                rule = "顶级牌在多人底池 = 大加注隔离"
             )
             tier <= 3 && hand.endsWith("s") -> PreflopDecision(
                 action = ActionType.CALL,
                 raiseSize = null,
-                explanation = "$hand has good implied odds multiway. Suited hands can make flushes/straights and win big pots from multiple opponents.",
-                rule = "Suited hands multiway = call for implied odds"
+                explanation = "$hand 在多人底池有很好的隐含赔率。同花牌能做成同花/顺子，从多个对手那里赢大底池。",
+                rule = "同花牌在多人底池 = 跟注博隐含赔率"
             )
             else -> PreflopDecision(
                 action = ActionType.FOLD,
                 raiseSize = null,
-                explanation = "$hand doesn't play well multiway. Offsuit hands and weak holdings lose value with more opponents in the pot.",
-                rule = "Weak hands multiway = fold"
+                explanation = "$hand 在多人底池打不好。不同花牌和弱牌在多个对手面前会失去价值。",
+                rule = "弱牌在多人底池 = 弃牌"
             )
         }
     }
@@ -207,26 +207,26 @@ object PreflopStrategy {
             hand in listOf("AA", "KK") -> PreflopDecision(
                 action = ActionType.RAISE,
                 raiseSize = RaiseSize.ALL_IN,
-                explanation = "$hand is the nuts preflop. Against a 3-bet, go all-in to get maximum value. They'll call with worse hands like QQ/AK.",
-                rule = "AA/KK vs 3-bet = 4-bet or all-in"
+                explanation = "$hand 是翻牌前的坚果牌。面对3-bet直接全推榨取最大价值。对手会用QQ、AK等较差的牌跟注。",
+                rule = "AA/KK 面对3-bet = 4-bet全推"
             )
             hand in listOf("QQ", "AKs") -> PreflopDecision(
                 action = ActionType.CALL,
                 raiseSize = null,
-                explanation = "$hand is strong enough to call a 3-bet but not always strong enough to 4-bet. See a flop and re-evaluate.",
-                rule = "QQ/AKs vs 3-bet = call, reassess on flop"
+                explanation = "$hand 足够强可以跟注3-bet，但不一定够强到4-bet。先看翻牌再重新评估局势。",
+                rule = "QQ/AKs 面对3-bet = 跟注，看翻牌再决定"
             )
             tier == 2 -> PreflopDecision(
                 action = ActionType.FOLD,
                 raiseSize = null,
-                explanation = "$hand is not strong enough to continue vs a 3-bet. The 3-bettor usually has a very strong range (QQ+, AK). Cut your losses.",
-                rule = "Most hands vs 3-bet = fold unless you have premiums"
+                explanation = "$hand 面对3-bet不够强。3-bet者通常拿着很强的范围（QQ+、AK）。及时止损。",
+                rule = "大部分牌面对3-bet = 弃牌，除非你有顶级牌"
             )
             else -> PreflopDecision(
                 action = ActionType.FOLD,
                 raiseSize = null,
-                explanation = "$hand should always fold to a 3-bet. You need the top of your range to continue here.",
-                rule = "Fold to 3-bets unless you have a premium hand"
+                explanation = "$hand 面对3-bet应该永远弃牌。在这里你需要范围最顶端的牌才能继续。",
+                rule = "面对3-bet没有顶级牌 = 弃牌"
             )
         }
     }

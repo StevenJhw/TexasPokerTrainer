@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.pokertrainer.app.data.lessons
 import com.pokertrainer.app.ui.components.CardView
+import com.pokertrainer.app.ui.components.HandRangeChart
 import com.pokertrainer.app.ui.theme.*
 import kotlinx.coroutines.launch
 
@@ -33,7 +34,8 @@ data class LessonPage(
     val body: String,
     val highlight: String = "",
     val exampleCards: List<List<com.pokertrainer.app.data.model.Card>> = emptyList(),
-    val exampleLabels: List<String> = emptyList()
+    val exampleLabels: List<String> = emptyList(),
+    val showRangeChart: Boolean = false
 )
 
 @Composable
@@ -274,6 +276,11 @@ private fun LessonDetailScreen(
                             }
                         }
                     }
+                }
+
+                if (page.showRangeChart) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    HandRangeChart()
                 }
 
                 if (page.highlight.isNotEmpty()) {
